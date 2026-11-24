@@ -1,0 +1,11 @@
+{
+  "name": "Rainbow",
+  "description": "Rainbow — Social video-sharing platform powered by NK. Watch videos, explore Shorts, connect on social feeds, message safely, and manage your channel in Rainbow Studio.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

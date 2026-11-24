@@ -1,0 +1,240 @@
+{
+  "entities": {
+    "UserPublic": {
+      "title": "UserPublic",
+      "description": "Public creator profile without PII",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "username": { "type": "string", "minLength": 2, "maxLength": 40, "pattern": "^[a-zA-Z0-9_.\\-]+$" },
+        "photoURL": { "type": "string", "maxLength": 2000 },
+        "coverURL": { "type": "string", "maxLength": 2000 },
+        "bio": { "type": "string", "maxLength": 500 },
+        "followersCount": { "type": "number" },
+        "followingCount": { "type": "number" },
+        "videosCount": { "type": "number" },
+        "isPrivate": { "type": "boolean" },
+        "showSavedPublicly": { "type": "boolean" },
+        "whoCanMessage": { "type": "string", "enum": ["everyone", "following", "nobody"] },
+        "isMinor": { "type": "boolean" },
+        "isRestricted": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "displayName", "username", "followersCount", "followingCount", "videosCount", "isPrivate", "whoCanMessage", "isMinor", "isRestricted", "createdAt", "updatedAt"]
+    },
+    "UserPrivate": {
+      "title": "UserPrivate",
+      "description": "Private PII and user settings isolated from public reads",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 320 },
+        "phoneNumber": { "type": "string", "maxLength": 40 },
+        "birthYear": { "type": "number" },
+        "language": { "type": "string", "maxLength": 16 },
+        "theme": { "type": "string", "enum": ["light", "dark"] },
+        "autoplay": { "type": "boolean" },
+        "shortsAutoplay": { "type": "boolean" },
+        "dataSaver": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "language", "theme", "autoplay", "shortsAutoplay", "dataSaver", "updatedAt"]
+    },
+    "Video": {
+      "title": "Video",
+      "description": "Uploaded video or Short stored in Firebase Storage with metadata in Firestore",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "creatorId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "creatorName": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "creatorUsername": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "creatorPhotoURL": { "type": "string", "maxLength": 2000 },
+        "title": { "type": "string", "minLength": 1, "maxLength": 150 },
+        "description": { "type": "string", "maxLength": 5000 },
+        "videoUrl": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "storagePath": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "thumbnailUrl": { "type": "string", "maxLength": 2000 },
+        "thumbnailPath": { "type": "string", "maxLength": 500 },
+        "duration": { "type": "number" },
+        "isShort": { "type": "boolean" },
+        "category": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "tags": { "type": "array" },
+        "visibility": { "type": "string", "enum": ["public", "private"] },
+        "status": { "type": "string", "enum": ["active", "restricted", "removed"] },
+        "viewsCount": { "type": "number" },
+        "likesCount": { "type": "number" },
+        "dislikesCount": { "type": "number" },
+        "commentsCount": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "creatorId", "creatorName", "creatorUsername", "title", "videoUrl", "storagePath", "duration", "isShort", "category", "visibility", "status", "viewsCount", "likesCount", "dislikesCount", "commentsCount", "createdAt", "updatedAt"]
+    },
+    "Comment": {
+      "title": "Comment",
+      "description": "Comment or reply on a video or post",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "authorId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "authorName": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "authorUsername": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "authorPhotoURL": { "type": "string", "maxLength": 2000 },
+        "text": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "parentId": { "type": "string", "maxLength": 128 },
+        "status": { "type": "string", "enum": ["active", "removed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "authorId", "authorName", "text", "status", "createdAt"]
+    },
+    "Post": {
+      "title": "Post",
+      "description": "Social feed post",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "authorId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "authorName": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "authorUsername": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "authorPhotoURL": { "type": "string", "maxLength": 2000 },
+        "text": { "type": "string", "maxLength": 3000 },
+        "imageUrl": { "type": "string", "maxLength": 2000 },
+        "imagePath": { "type": "string", "maxLength": 500 },
+        "sharedVideoId": { "type": "string", "maxLength": 128 },
+        "sharedVideoTitle": { "type": "string", "maxLength": 150 },
+        "sharedVideoThumb": { "type": "string", "maxLength": 2000 },
+        "visibility": { "type": "string", "enum": ["public", "followers", "private"] },
+        "status": { "type": "string", "enum": ["active", "removed"] },
+        "likesCount": { "type": "number" },
+        "commentsCount": { "type": "number" },
+        "sharesCount": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "authorId", "authorName", "visibility", "status", "likesCount", "commentsCount", "sharesCount", "createdAt", "updatedAt"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "User notification item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "recipientId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "actorId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "actorName": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "type": { "type": "string", "enum": ["follow", "like", "comment", "reply", "upload", "system"] },
+        "targetId": { "type": "string", "maxLength": 128 },
+        "message": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "read": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "recipientId", "actorId", "actorName", "type", "message", "read", "createdAt"]
+    },
+    "Conversation": {
+      "title": "Conversation",
+      "description": "Direct messaging conversation between two users",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 260 },
+        "participants": { "type": "array" },
+        "lastMessage": { "type": "string", "maxLength": 1000 },
+        "lastSenderId": { "type": "string", "maxLength": 128 },
+        "lastMessageAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "participants", "createdAt"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Chat message inside a conversation",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "senderId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "text": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "readBy": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "senderId", "text", "readBy", "createdAt"]
+    },
+    "Report": {
+      "title": "Report",
+      "description": "Moderation report for video, account, comment, or post",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "reporterId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "targetType": { "type": "string", "enum": ["video", "account", "comment", "post"] },
+        "targetId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "parentId": { "type": "string", "maxLength": 128 },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "details": { "type": "string", "maxLength": 1000 },
+        "status": { "type": "string", "enum": ["pending", "reviewed", "resolved", "dismissed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "reporterId", "targetType", "targetId", "reason", "status", "createdAt"]
+    },
+    "Announcement": {
+      "title": "Announcement",
+      "description": "Official platform announcement",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "title": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "body": { "type": "string", "minLength": 1, "maxLength": 3000 },
+        "authorId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "body", "authorId", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserPublic" },
+      "description": "Public creator profiles"
+    },
+    "/users/{userId}/private/{docId}": {
+      "schema": { "$ref": "#/entities/UserPrivate" },
+      "description": "Private PII and account settings"
+    },
+    "/videos/{videoId}": {
+      "schema": { "$ref": "#/entities/Video" },
+      "description": "Published and private user videos and Shorts"
+    },
+    "/videos/{videoId}/comments/{commentId}": {
+      "schema": { "$ref": "#/entities/Comment" },
+      "description": "Video comments and replies"
+    },
+    "/posts/{postId}": {
+      "schema": { "$ref": "#/entities/Post" },
+      "description": "Social feed posts"
+    },
+    "/posts/{postId}/comments/{commentId}": {
+      "schema": { "$ref": "#/entities/Comment" },
+      "description": "Post comments and replies"
+    },
+    "/notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/Notification" },
+      "description": "User notifications"
+    },
+    "/conversations/{conversationId}": {
+      "schema": { "$ref": "#/entities/Conversation" },
+      "description": "User-to-user messaging conversations"
+    },
+    "/conversations/{conversationId}/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/Message" },
+      "description": "Conversation messages"
+    },
+    "/reports/{reportId}": {
+      "schema": { "$ref": "#/entities/Report" },
+      "description": "Content and account moderation reports"
+    },
+    "/announcements/{announcementId}": {
+      "schema": { "$ref": "#/entities/Announcement" },
+      "description": "Platform-wide announcements"
+    }
+  }
+}

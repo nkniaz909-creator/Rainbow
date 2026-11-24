@@ -1,0 +1,56 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Video files (max 500MB, video/* content types)
+    match /videos/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isOwner(userId) &&
+        request.resource.size < 500 * 1024 * 1024 &&
+        request.resource.contentType.matches('video/.*');
+      allow delete: if isOwner(userId);
+    }
+
+    // Thumbnails (max 10MB, image/*)
+    match /thumbnails/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isOwner(userId) &&
+        request.resource.size < 10 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/.*');
+      allow delete: if isOwner(userId);
+    }
+
+    // Avatars, Covers, and Social Post Images (max 10MB, image/*)
+    match /avatars/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isOwner(userId) &&
+        request.resource.size < 10 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/.*');
+      allow delete: if isOwner(userId);
+    }
+
+    match /covers/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isOwner(userId) &&
+        request.resource.size < 10 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/.*');
+      allow delete: if isOwner(userId);
+    }
+
+    match /posts/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isOwner(userId) &&
+        request.resource.size < 10 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/.*');
+      allow delete: if isOwner(userId);
+    }
+  }
+}
